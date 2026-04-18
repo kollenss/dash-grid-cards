@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "updated": "2026-04-18",
+  "cards": [
+    {
+      "id": "avgangstavlan",
+      "name": "Avgångstavlan (Västtrafik)",
+      "description": "Real-time public transport departures from Västtrafik stops. Shows minutes until departure with color-coded line badges.",
+      "author": "kollenss",
+      "version": "1.0.0",
+      "tags": ["transport", "västtrafik", "sweden"],
+      "requires": ["vasttrafik"],
+      "bundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/avgangstavlan/dist/card.js",
+      "readmeUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/avgangstavlan/README.md"
+    }
+  ]
+}
