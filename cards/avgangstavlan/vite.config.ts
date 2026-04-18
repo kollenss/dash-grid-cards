@@ -10,7 +10,7 @@ export default defineConfig({
       entry: 'src/index.tsx',
       formats: ['iife'],
       name: 'DGCard_avgangstavlan',
-      fileName: () => 'card',
+      fileName: () => 'card.js',
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
