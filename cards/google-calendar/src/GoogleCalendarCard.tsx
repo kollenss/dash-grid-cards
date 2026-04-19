@@ -49,7 +49,7 @@ export default function GoogleCalendarCard({ config, colSpan = 4, rowSpan = 3 }:
     setLoading(true)
     try {
       const encoded = encodeURIComponent(config.ics_url)
-      const res = await fetch(`/api/plugins/google-calendar/ical?url=${encoded}`)
+      const res = await fetch(`/api/plugin-rpc/google-calendar/ical?url=${encoded}`)
       const data = await res.json()
       if (!res.ok || data.error) {
         setError(data.error ?? `HTTP ${res.status}`)
