@@ -86,6 +86,10 @@ export default defineConfig({
 })
 ```
 
+> **Host globals:** `window.__dashgrid` exposes `{ React, ReactDOM, registry }`.
+> Both `react` and `react-dom` are available as peer deps — import freely, including
+> hooks, `createPortal`, etc. Do NOT bundle them (they are in `external` above).
+
 ### 4. `src/index.tsx` — entry point
 
 ```tsx
