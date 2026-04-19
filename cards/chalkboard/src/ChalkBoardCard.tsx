@@ -1,10 +1,11 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import type { CardProps } from '../../../sdk/types'
 
 const BOARD_COLOR = '#2c5f2e'
 const CHALK_COLORS = ['#ffffff', '#fffacd', '#ffd080', '#ff9090', '#90e890', '#90c8ff', '#ffb0e8', '#c8a0ff', '#ff9060']
 const BASE_CHALK_SIZE = 8
-const BASE_ERASER_SIZE = 30
+const BASE_ERASER_SIZE = 52
 
 function drawChalkSegment(
   ctx: CanvasRenderingContext2D,
@@ -64,6 +65,7 @@ function ChalkBoardOverlay({ aspectW, aspectH, savedData, onClose }: OverlayProp
   const [color, setColor] = useState(CHALK_COLORS[0])
   const drawing = useRef(false)
   const lastPos = useRef<{ x: number; y: number } | null>(null)
+  const [eraserPos, setEraserPos] = useState<{ x: number; y: number } | null>(null)
 
   const canvasSize = useCallback(() => {
     const ratio = aspectW / aspectH
@@ -143,6 +145,9 @@ function ChalkBoardOverlay({ aspectW, aspectH, savedData, onClose }: OverlayProp
 
   const continueDraw = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault()
+    if ('clientX' in e && tool === 'eraser') {
+      setEraserPos({ x: e.clientX, y: e.clientY })
+    }
     if (!drawing.current || !lastPos.current) return
     const canvas = canvasRef.current
     if (!canvas) return
@@ -193,19 +198,34 @@ function ChalkBoardOverlay({ aspectW, aspectH, savedData, onClose }: OverlayProp
     onClose(canvas ? canvas.toDataURL() : '')
   }, [onClose])
 
-  return (
+  const handleCanvasMouseEnter = useCallback((e: React.MouseEvent) => {
+    if (tool === 'eraser') setEraserPos({ x: e.clientX, y: e.clientY })
+  }, [tool])
+
+  const handleCanvasMouseLeave = useCallback(() => {
+    setEraserPos(null)
+    endDraw()
+  }, [endDraw])
+
+  // Show eraser ring when switching to eraser tool
+  useEffect(() => {
+    if (tool !== 'eraser') setEraserPos(null)
+  }, [tool])
+
+  const overlay = (
     <div className="chalk-overlay" onMouseDown={handleClose}>
       <div className="chalk-overlay-inner" onMouseDown={e => e.stopPropagation()}>
         <canvas
           ref={canvasRef}
-          className={`chalk-canvas chalk-cursor-${tool}`}
+          className={`chalk-canvas${tool === 'eraser' ? ' chalk-cursor-eraser' : ' chalk-cursor-chalk'}`}
           width={size.w * dpr}
           height={size.h * dpr}
           style={{ width: size.w, height: size.h }}
           onMouseDown={startDraw}
           onMouseMove={continueDraw}
           onMouseUp={endDraw}
-          onMouseLeave={endDraw}
+          onMouseEnter={handleCanvasMouseEnter}
+          onMouseLeave={handleCanvasMouseLeave}
           onTouchStart={startDraw}
           onTouchMove={continueDraw}
           onTouchEnd={endDraw}
@@ -231,12 +251,26 @@ function ChalkBoardOverlay({ aspectW, aspectH, savedData, onClose }: OverlayProp
             onMouseDown={e => { e.stopPropagation(); clearBoard() }}
             title="Clear board"
           >🗑️</button>
-          <div className="chalk-toolbar-sep" />
           <button className="chalk-close-btn" onMouseDown={e => { e.stopPropagation(); handleClose() }}>✕</button>
         </div>
       </div>
+
+      {/* Eraser size cursor ring */}
+      {tool === 'eraser' && eraserPos && (
+        <div
+          className="chalk-eraser-ring"
+          style={{
+            left: eraserPos.x - BASE_ERASER_SIZE / 2,
+            top:  eraserPos.y - BASE_ERASER_SIZE / 2,
+            width:  BASE_ERASER_SIZE,
+            height: BASE_ERASER_SIZE,
+          }}
+        />
+      )}
     </div>
   )
+
+  return createPortal(overlay, document.body)
 }
 
 export default function ChalkBoardCard({ config }: CardProps) {
