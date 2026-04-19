@@ -348,11 +348,12 @@ Omit `serverBundleUrl` if the card has no server plugin. Omit `readmeUrl` if the
 |---|---|---|
 | `jsxRuntime: 'automatic'` in vite.config | Card installs but never appears in the Add Card dialog | Use `jsxRuntime: 'classic'` |
 | `globals: { react: 'React' }` | Same as above — React is undefined at runtime | Use `globals: { react: 'window.__dashgrid.React' }` |
-| Server route path conflicts | `/api/plugins/manifest` stops working | Use `/api/plugin-rpc/` prefix, never `/api/plugins/` |
+| Server route path `/api/plugins/:id/*` | `/api/plugins/manifest` and `/api/plugins/installed` stop working | Use `/api/plugin-rpc/` prefix — find-my-way wildcard `*` matches empty string |
 | `?v=timestamp` on `file://` import URL | Server plugin silently fails to load | Use `pathToFileURL(path).href` without query params |
-| Parser requires SUMMARY | Events without titles are dropped silently | Make SUMMARY optional with a fallback string |
+| Missing SUMMARY in ICS events | Events silently dropped from calendar | Make SUMMARY optional with a fallback string |
 | `emptyOutDir: true` in server vite config | Server build wipes `card.js` | Set `emptyOutDir: false` for the server config |
 | Forgetting to commit `dist/` | Gallery installs old bundle from GitHub | Always build + commit dist before pushing |
+| `tsx watch` restarting on plugin file changes | Server crashes on install/uninstall (Vite gets ECONNREFUSED) | Run `tsx watch --ignore ./plugins --ignore ./data server/index.ts` |
 
 ---
 
