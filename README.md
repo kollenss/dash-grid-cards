@@ -378,6 +378,9 @@ export default function MyCard({ config, colSpan, rowSpan }: Props) {
 
 ## Pre-publish checklist
 
+Run through this before committing.
+
+**Code**
 - [ ] `type` in `registerCard` is unique and uses kebab-case
 - [ ] `vite.config.ts` uses `jsxRuntime: 'classic'` and correct `globals`
 - [ ] `glass-card` is the outermost element
@@ -385,6 +388,46 @@ export default function MyCard({ config, colSpan, rowSpan }: Props) {
 - [ ] Card handles missing/empty `config` values gracefully
 - [ ] CSS is injected via `?inline` import in `index.tsx` (with double-injection guard)
 - [ ] Server plugin (if any) only allows `https://` in proxied URLs
-- [ ] `dist/card.js` (and `dist/server.js`) are built and committed
-- [ ] `manifest.json` updated with correct URLs
-- [ ] Card has been tested: install from gallery, add to dashboard, configure
+
+**Build**
+- [ ] `npm run build` completes without errors
+- [ ] `dist/card.js` exists and contains `registerCard` / `__dashgrid`
+- [ ] `dist/server.js` exists (if server plugin used)
+- [ ] `manifest.json` updated with correct `bundleUrl` (and `serverBundleUrl` if applicable)
+
+---
+
+## Test checklist
+
+Run a full install/uninstall cycle in a live Dash Grid instance before pushing to the gallery.
+
+**Install**
+- [ ] Card appears in the plugin gallery
+- [ ] Install completes without error
+- [ ] Card appears under the correct group in the Add Card dialog immediately after install (no page reload required)
+- [ ] If server plugin: server responds — check browser Network tab for `/api/plugin-rpc/{id}/...`
+
+**Add card to dashboard**
+- [ ] Card can be added to the dashboard
+- [ ] Default size looks reasonable
+- [ ] ConfigUI fields appear and can be filled in
+- [ ] Card renders correctly after saving config
+- [ ] Card adapts to different sizes (resize and verify layout doesn't break)
+- [ ] Card shows a clear error state when config is missing or wrong (not a blank card)
+
+**Functionality**
+- [ ] Core feature works end-to-end with real data
+- [ ] Card updates correctly when config is changed
+- [ ] If fetching external data: error state shown on network failure
+
+**Uninstall**
+- [ ] Uninstall completes without error
+- [ ] Card disappears from the Add Card dialog after page reload
+- [ ] Card is removed from any dashboards it was placed on (or degrades gracefully)
+- [ ] Check database: `SELECT * FROM plugins WHERE id='your-card-id'` returns no rows
+- [ ] Check database: `SELECT * FROM cards WHERE type='your-card-id'` returns no rows
+- [ ] Plugin files removed from disk: `plugins/your-card-id.js` and `plugins/your-card-id.server.js` are gone
+
+**Re-install**
+- [ ] Card can be reinstalled cleanly after uninstall
+- [ ] No stale state from the previous install
