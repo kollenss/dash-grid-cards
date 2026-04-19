@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-04-18",
+  "updated": "2026-04-19",
   "cards": [
     {
       "id": "avgangstavlan",
@@ -12,6 +12,17 @@
       "requires": ["vasttrafik"],
       "bundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/avgangstavlan/dist/card.js",
       "readmeUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/avgangstavlan/README.md"
+    },
+    {
+      "id": "google-calendar",
+      "name": "Google Calendar",
+      "description": "Weekly calendar view (Mon–Sun) fetched from any Google Calendar ICS URL. Great for shared family calendars.",
+      "author": "kollenss",
+      "version": "1.0.0",
+      "tags": ["calendar", "google", "family"],
+      "bundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/google-calendar/dist/card.js",
+      "serverBundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/google-calendar/dist/server.js",
+      "readmeUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/google-calendar/README.md"
     }
   ]
 }
