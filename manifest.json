@@ -31,7 +31,7 @@
       "description": "A classic green chalkboard you can draw on. Chalk texture, color picker, and sponge eraser.",
       "author": "kollenss",
       "version": "1.0.0",
-      "status": "preview",
+      "status": "stable",
       "tags": ["drawing", "fun", "static"],
       "bundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/chalkboard/dist/card.js",
       "readmeUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/chalkboard/README.md"
