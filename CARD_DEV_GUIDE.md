@@ -177,6 +177,8 @@ db.prepare('INSERT INTO plugins (id, name, version, bundle_url, installed_at) VA
 
 > **Important:** This skips the gallery install flow entirely. Use it only for iterating on UI and logic — never as a substitute for Phase 1 testing.
 
+> **Note:** `plugins/` is gitignored in `hassDasboard` — never commit the local copy. The bundle that gets installed by users is always fetched from the GitHub raw URL in `bundleUrl`.
+
 ---
 
 ## Test routine for community plugins
@@ -389,9 +391,20 @@ Preview cards are hidden in the gallery by default. Users enable a "Show preview
 
 ### Stage 2 — Stable (after all three test phases pass)
 
-Remove `"status": "preview"` (or set it to `"stable"`). The card becomes visible to all users.
+Change `"status": "preview"` to `"status": "stable"` in `manifest.json` and push. The card becomes visible to all users without the preview toggle.
 
 If the card has server-side logic (Node.js), also add `"serverBundleUrl"`.
+
+---
+
+## Known gotchas
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| `Cannot read properties of undefined (reading 'createPortal')` | `window.__dashgrid.ReactDOM` was missing | Already fixed in host — `ReactDOM` is now exposed. Import normally from `react-dom`. |
+| Vite warning: "Variable absolute imports not supported" | Dynamic `import('/plugins/${id}.js')` confuses Vite's static analysis | Add `/* @vite-ignore */` inside the import — already done in App.tsx and PluginGallery.tsx |
+| `git add plugins/` fails with "path is ignored" | `plugins/` is gitignored in `hassDasboard` | Don't commit it — users download from `bundleUrl` at install time |
+| Overlay doesn't cover full screen / `backdrop-filter` clipping | `position: fixed` inside a `backdrop-filter` parent breaks out of the viewport | Render fullscreen overlays via `createPortal(…, document.body)` |
 
 ---
 
