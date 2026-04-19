@@ -4,6 +4,7 @@ import GoogleCalendarConfigUI from './GoogleCalendarConfigUI'
 import cardCss from './GoogleCalendarCard.css?inline'
 
 ;(function injectStyles() {
+  if (document.querySelector('style[data-card="google-calendar"]')) return
   const style = document.createElement('style')
   style.setAttribute('data-card', 'google-calendar')
   style.textContent = cardCss

@@ -1,26 +1,27 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import cssInjectedByJs from 'vite-plugin-css-injected-by-js'
 
 export default defineConfig({
-  plugins: [react(), cssInjectedByJs()],
+  plugins: [
+    react({ jsxRuntime: 'classic' }),
+  ],
   build: {
     lib: {
       entry: 'src/index.tsx',
       formats: ['iife'],
-      name: 'GoogleCalendarCard',
+      name: 'DGCard_googleCalendar',
       fileName: () => 'card.js',
     },
-    outDir: 'dist',
-    emptyOutDir: true,
     rollupOptions: {
       external: ['react', 'react-dom'],
       output: {
         globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
+          react: 'window.__dashgrid.React',
+          'react-dom': 'window.__dashgrid.ReactDOM',
         },
       },
     },
+    outDir: 'dist',
+    emptyOutDir: false,
   },
 })
