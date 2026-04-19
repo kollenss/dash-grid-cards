@@ -1,0 +1,194 @@
+/* ── Card (grid tile) ──────────────────────────────────────── */
+
+.chalk-card {
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  container-type: size;
+}
+
+.chalk-card-bg {
+  width: 100%;
+  height: 100%;
+  background: #2c5f2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: calc(var(--hb-card-radius) - 1px);
+}
+
+.chalk-card-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Subtle grain overlay via mix-blend */
+  image-rendering: auto;
+}
+
+.chalk-card-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.chalk-card-icon {
+  font-size: clamp(1.4rem, 12cqh, 2.8rem);
+  line-height: 1;
+}
+
+@supports not (font-size: 1cqh) {
+  .chalk-card-icon { font-size: 2rem; }
+}
+
+.chalk-card-hint {
+  font-size: clamp(0.55rem, 4cqh, 0.75rem);
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-family: var(--font);
+}
+
+@supports not (font-size: 1cqh) {
+  .chalk-card-hint { font-size: 0.65rem; }
+}
+
+/* 1-wide: hide hint text */
+@container (max-width: 115px) {
+  .chalk-card-hint { display: none; }
+}
+
+/* ── Fullscreen overlay ────────────────────────────────────── */
+
+.chalk-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  gap: 14px;
+}
+
+.chalk-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ── Canvas ──────────────────────────────────────────────────  */
+
+.chalk-canvas {
+  border-radius: 10px;
+  display: block;
+  box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.08);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.chalk-cursor-chalk { cursor: crosshair; }
+.chalk-cursor-eraser { cursor: cell; }
+
+/* ── Toolbar ─────────────────────────────────────────────────  */
+
+.chalk-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(10, 20, 10, 0.55);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 40px;
+  padding: 8px 12px;
+}
+
+.chalk-toolbar-sep {
+  width: 1px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+.chalk-color-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.chalk-color-btn:hover {
+  transform: scale(1.2);
+}
+
+.chalk-color-btn.active {
+  border-color: rgba(255, 255, 255, 0.85);
+  transform: scale(1.25);
+  box-shadow: 0 0 6px rgba(255,255,255,0.4);
+}
+
+.chalk-tool-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, border-color 0.12s;
+  flex-shrink: 0;
+  outline: none;
+}
+
+.chalk-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chalk-tool-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.chalk-close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+  outline: none;
+  font-family: var(--font);
+}
+
+.chalk-close-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}

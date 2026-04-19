@@ -24,5 +24,17 @@
       "serverBundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/google-calendar/dist/server.js",
       "readmeUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/google-calendar/README.md"
     }
+  ,
+    {
+      "id": "chalkboard",
+      "name": "Chalkboard",
+      "description": "A classic green chalkboard you can draw on. Chalk texture, color picker, and sponge eraser.",
+      "author": "kollenss",
+      "version": "1.0.0",
+      "status": "preview",
+      "tags": ["drawing", "fun", "static"],
+      "bundleUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/chalkboard/dist/card.js",
+      "readmeUrl": "https://raw.githubusercontent.com/kollenss/dash-grid-cards/main/cards/chalkboard/README.md"
+    }
   ]
 }
