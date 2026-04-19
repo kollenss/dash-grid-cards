@@ -7,6 +7,8 @@ export interface CalEvent {
   location?: string
 }
 
+const NO_TITLE = '(No title)'
+
 function parseIcsDate(value: string): { date: Date; allDay: boolean } {
   // All-day: YYYYMMDD
   if (/^\d{8}$/.test(value)) {
@@ -51,7 +53,8 @@ export function parseIcs(ics: string): CalEvent[] {
     }
     if (line === 'END:VEVENT') {
       inEvent = false
-      if (current.uid && current.summary && current.start && current.end) {
+      if (current.uid && current.start && current.end) {
+        if (!current.summary) current.summary = NO_TITLE
         events.push(current as CalEvent)
       }
       continue
