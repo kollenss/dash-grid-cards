@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 
 interface Line {
   designation?: string
@@ -14,11 +15,28 @@ interface ServiceJourney {
 }
 
 interface Departure {
+  detailsReference?: string
   serviceJourney?: ServiceJourney
   plannedTime: string
   estimatedOtherwisePlannedTime?: string
   estimatedTime?: string
   isCancelled?: boolean
+  stopPoint?: { name?: string }
+}
+
+interface StopCall {
+  stopPoint: { name: string }
+  plannedArrivalTime?: string
+  plannedDepartureTime?: string
+  estimatedOtherwisePlannedArrivalTime?: string
+  estimatedOtherwisePlannedDepartureTime?: string
+}
+
+interface JourneyModal {
+  departure: Departure
+  calls: StopCall[]
+  loading: boolean
+  error?: string
 }
 
 interface Props {
@@ -45,6 +63,7 @@ export default function AvgangstavlanCard({ config, colSpan = 3, rowSpan = 4 }: 
   const [nextDeparture, setNextDeparture] = useState<Departure | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+  const [modal, setModal] = useState<JourneyModal | null>(null)
   const stopGid = config.stop_area_gid
   const limit = config.limit ?? 8
 
@@ -76,6 +95,21 @@ export default function AvgangstavlanCard({ config, colSpan = 3, rowSpan = 4 }: 
       setError(e.message)
     }
   }, [stopGid, limit])
+
+  const openJourneyModal = useCallback(async (dep: Departure) => {
+    if (!dep.detailsReference) return
+    setModal({ departure: dep, calls: [], loading: true })
+    try {
+      const res = await fetch(
+        `/api/vasttrafik/departure-details/${stopGid}/${encodeURIComponent(dep.detailsReference)}`
+      )
+      const data = await res.json()
+      const calls: StopCall[] = data.serviceJourneys?.[0]?.callsOnServiceJourney ?? []
+      setModal({ departure: dep, calls, loading: false })
+    } catch (e: any) {
+      setModal(prev => prev ? { ...prev, loading: false, error: e.message } : null)
+    }
+  }, [stopGid])
 
   useEffect(() => {
     fetchDepartures()
@@ -137,7 +171,76 @@ export default function AvgangstavlanCard({ config, colSpan = 3, rowSpan = 4 }: 
     )
   }
 
+  const journeyModal = modal && createPortal(
+    <div className="bus-journey-backdrop" onClick={() => setModal(null)}>
+      <div className="bus-journey-modal" onClick={e => e.stopPropagation()}>
+        <div className="bus-journey-header">
+          {(() => {
+            const line = modal.departure.serviceJourney?.line
+            const bg = line?.backgroundColor ?? '#555'
+            const fg = line?.foregroundColor ?? '#fff'
+            const designation = line?.designation ?? line?.name ?? '?'
+            const direction = modal.departure.serviceJourney?.direction ?? ''
+            return (
+              <>
+                <span className="bus-line-badge" style={{ backgroundColor: bg, color: fg }}>{designation}</span>
+                <span className="bus-journey-direction">{direction}</span>
+              </>
+            )
+          })()}
+          <button className="bus-journey-close" onClick={() => setModal(null)}>✕</button>
+        </div>
+        {modal.loading ? (
+          <div className="bus-journey-loading">Loading…</div>
+        ) : modal.error ? (
+          <div className="bus-journey-loading" style={{ color: 'var(--hb-status-error)' }}>{modal.error}</div>
+        ) : (() => {
+          const depBestTime = modal.departure.estimatedOtherwisePlannedTime ?? modal.departure.plannedTime
+          const depMs = new Date(depBestTime).getTime()
+          const configuredStop = modal.departure.stopPoint?.name ?? ''
+          const depIdx = modal.calls.findIndex(c => c.stopPoint.name === configuredStop)
+          const sliceFrom = depIdx >= 0 ? Math.max(0, depIdx - 3) : 0
+          const visibleCalls = modal.calls.slice(sliceFrom)
+          return (
+            <div className="bus-journey-stops">
+              {visibleCalls.map((call, i) => {
+                const bestTime = call.estimatedOtherwisePlannedDepartureTime
+                  ?? call.estimatedOtherwisePlannedArrivalTime
+                  ?? call.plannedDepartureTime
+                  ?? call.plannedArrivalTime
+                const absoluteIdx = sliceFrom + i
+                const isCurrent = absoluteIdx === depIdx
+                const isBefore = depIdx >= 0 && absoluteIdx < depIdx
+                const offsetMins = bestTime
+                  ? Math.round((new Date(bestTime).getTime() - depMs) / 60000)
+                  : null
+                return (
+                  <div key={i} className={`bus-stop-row${isBefore ? ' bus-stop-row--past' : ''}${isCurrent ? ' bus-stop-row--current' : ''}`}>
+                    <span className="bus-stop-dot" />
+                    <span className="bus-stop-name">{call.stopPoint.name}</span>
+                    <span className="bus-stop-time">
+                      {bestTime ? formatTime(bestTime) : '—'}
+                      {offsetMins !== null && !isBefore && (
+                        <span className="bus-stop-offset">
+                          {isCurrent
+                            ? `(Om ${minutesUntil(bestTime!)} min)`
+                            : `(+${offsetMins} min)`}
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })()}
+      </div>
+    </div>,
+    document.body
+  )
+
   return (
+    <>
     <div className={cardClass}>
       <div className="bus-card-header">
         <span className="card-label">{title}</span>
@@ -181,7 +284,11 @@ export default function AvgangstavlanCard({ config, colSpan = 3, rowSpan = 4 }: 
             const mins = minutesUntil(bestTime)
             const cancelled = dep.isCancelled
             return (
-              <div key={i} className={`bus-row ${cancelled ? 'bus-row--cancelled' : ''}`}>
+              <div
+                key={i}
+                className={`bus-row ${cancelled ? 'bus-row--cancelled' : ''}${dep.detailsReference ? ' bus-row--clickable' : ''}`}
+                onClick={dep.detailsReference ? () => openJourneyModal(dep) : undefined}
+              >
                 <span className="bus-line-badge" style={{ backgroundColor: bg, color: fg }}
                   title={modeIcon + ' ' + (line?.name ?? '')}>
                   {designation}
@@ -212,5 +319,7 @@ export default function AvgangstavlanCard({ config, colSpan = 3, rowSpan = 4 }: 
         </div>
       )}
     </div>
+    {journeyModal}
+    </>
   )
 }
