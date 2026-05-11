@@ -377,36 +377,37 @@
   opacity: 0.8;
 }
 
-/* ── cqh scaling — grows with card, never below original sizes ────────────── */
-/* Compact and minimal modes are excluded — they're intentionally small.       */
-@supports (font-size: 1cqh) {
+/* ── cqw scaling — grows with card width, never below original sizes ─────── */
+/* Cards get 2–3× wider in view mode (fewer columns), so cqw drives           */
+/* noticeable growth. Compact and minimal modes are excluded.                 */
+@supports (font-size: 1cqw) {
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) {
-    gap:     max(6px,  1.5cqh);
-    padding: max(14px, 3.5cqh) max(16px, 3cqw);
+    gap:     max(6px,  1.5cqw);
+    padding: max(14px, 3cqw);
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-row {
-    grid-template-columns: max(42px, 11cqh) 1fr auto;
-    gap:     max(10px, 2.5cqh);
+    grid-template-columns: max(42px, 8cqw) 1fr auto;
+    gap:     max(10px, 2cqw);
     padding: max(5px,  1.2cqh) 0;
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-line-badge {
-    font-size:     max(13px, 3.5cqh);
-    min-width:     max(34px, 9cqh);
-    padding:       max(2px, 0.5cqh) max(6px, 1.5cqh);
+    font-size:     max(13px, 3cqw);
+    min-width:     max(34px, 7cqw);
+    padding:       max(2px, 0.5cqh) max(6px, 1cqw);
     border-radius: max(6px, 1.5cqh);
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-direction {
-    font-size: max(13px, 3.5cqh);
+    font-size: max(13px, 3cqw);
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-mins-badge {
-    padding:       max(3px, 0.8cqh) max(10px, 2.5cqh);
-    border-radius: max(8px, 2cqh);
+    padding:       max(3px, 0.8cqh) max(10px, 2cqw);
+    border-radius: max(8px, 1.8cqh);
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-mins-badge strong,
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-mins-now {
-    font-size: max(20px, 5.5cqh);
+    font-size: max(20px, 4cqw);
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-mins-unit {
-    font-size: max(11px, 3cqh);
+    font-size: max(11px, 2cqw);
   }
 }
