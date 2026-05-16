@@ -382,8 +382,8 @@
 /* noticeable growth. Compact and minimal modes are excluded.                 */
 @supports (font-size: 1cqw) {
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) {
-    gap:     max(6px,  1.5cqw);
-    padding: max(14px, 3cqw);
+    gap:     clamp(6px,  1.5cqw, 10px);
+    padding: clamp(14px, 3cqw,   20px);
   }
   .bus-card:not(.bus-card--compact):not(.bus-card--minimal) .bus-row {
     grid-template-columns: max(42px, 8cqw) 1fr auto;

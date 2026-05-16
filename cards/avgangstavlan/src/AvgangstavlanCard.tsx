@@ -126,7 +126,7 @@ export default function AvgangstavlanCard({ config, colSpan = 3, rowSpan = 4 }: 
   const title = config.title ?? 'Departures'
   const compact = rowSpan === 1
   const minimal = colSpan === 1 && rowSpan === 1
-  const showDirection = colSpan >= 3
+  const showDirection = colSpan >= 2
   const displayLimit = Math.min(config.limit ?? 8, compact ? 1 : (rowSpan - 1) * 2 + 1)
   const filteredDepartures = config.hide_now
     ? departures.filter(d => minutesUntil(d.estimatedOtherwisePlannedTime ?? d.plannedTime) > 0)
